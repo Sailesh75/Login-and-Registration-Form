@@ -67,13 +67,15 @@ app.post("/login",async(req,res)=>{
         const userExits=await Registration.findOne({name});
         if(userExits){
             if(password===userExits.password){
-                return res.status(201).json({message:"Login Successful!!"})
+                // return res.status(201).json({message:"Login Successful!!"})
+                res.render("welcome");
             }
             else{
                 return res.status(422).json({error:"Password Incorrect!!"})
             }    
         }else{
             return res.status(422).json({error:"User doesn't exist!!"})
+               
         }
       
     }catch(err){
