@@ -38,16 +38,20 @@ app.post("/form",async(req,res)=>{
     }
     try{
         const userExits=await Registration.findOne({email});
+        let num=phone.toString().length;
         if(userExits){
-            return res.status(422).json({error:"Email already exists!!"})
+            return res.status(422).json({error:"User already exists!!"})
         }
-        else if(!password===confirmpassword){
+        else if(num<10){
+            return res.status(422).json({error:"Phone number Invalid!!"})
+        }
+        else if(password!==confirmpassword){
             return res.status(422).json({error:"Passwords doesn't match!!"})
         }
         else{
             const user=new Registration({name ,email ,phone ,password ,confirmpassword});
             await user.save();
-            res.status(201).json({message:"Successful!!"})
+            res.status(201).json({message:"User registered!!"})
         }
     }catch(error){
        console.log(error);
@@ -65,11 +69,13 @@ app.post("/login",async(req,res)=>{
             if(password===userExits.password){
                 return res.status(201).json({message:"Login Successful!!"})
             }
+            else{
+                return res.status(422).json({error:"Password Incorrect!!"})
+            }    
+        }else{
+            return res.status(422).json({error:"User doesn't exist!!"})
         }
-        else{
-            return res.status(422).json({error:"User doesn't exists!!"})
-        }
-        
+      
     }catch(err){
         console.log(err);
     }
