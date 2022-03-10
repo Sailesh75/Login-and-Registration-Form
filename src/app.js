@@ -1,9 +1,11 @@
 const express=require("express");
+const bcrypt=require("bcryptjs");
 const path=require("path");
 require("./db/conn")
 const hbs=require("hbs");
 const Registration=require("../src/models/registration");
-const async = require("hbs/lib/async");
+
+// const async = require("hbs/lib/async");
 
 const app=express();
 const port = process.env.PORT || 3000;
@@ -59,14 +61,15 @@ app.post("/form",async(req,res)=>{
 })
 
 app.post("/login",async(req,res)=>{
-    const {name ,password}=req.body
+    const {name ,password,confirmpassword}=req.body
     if (!name||!password){
         return res.status(422).json({error:"Please fill all the forms!!"}) 
     }
     try{
         const userExits=await Registration.findOne({name});
+        const isMatch=bcrypt.compare(password,confirmpassword);
         if(userExits){
-            if(password===userExits.password){
+            if(isMatch){
                 // return res.status(201).json({message:"Login Successful!!"})
                 res.render("welcome");
             }
