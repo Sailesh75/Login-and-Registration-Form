@@ -77,10 +77,8 @@ app.post("/login",async(req,res)=>{
                 return res.status(422).json({error:"Password Incorrect!!"})
             }    
         }else{
-            return res.status(422).json({error:"User doesn't exist!!"})
-               
-        }
-      
+            return res.status(422).json({error:"User doesn't exist!!"})   
+        } 
     }catch(err){
         console.log(err);
     }
