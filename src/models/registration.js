@@ -1,15 +1,15 @@
 const mongoose =require('mongoose');
 const validator=require('validator');
 const bcrypt=require('bcryptjs');
-// const async = require('hbs/lib/async');
 
-const registrationSchema=new mongoose.Schema({   //schema_name for the collection registrations
+//This collection doesn't include any custom(self-made) validations
+const registrationSchema=new mongoose.Schema({   //schema_name for the collection registration
    name:{
        type:String,             //These are called validations ,They are defined in the schema_type.
        required:true,           // They are built-in validators.
        unique:true
    },
-    email:{                       //This collection doesn't include any custom(self-made) validations
+    email:{                       
        type:String,
        required:true,
        unique:true,                        
@@ -45,12 +45,10 @@ registrationSchema.pre("save",async function(next){
     next();
 })
 
+//Syntax for model(collection_creation) 
 // const class_name(model_name of the collection) = new mongoose.model("collection_name",collection_schema_name)
 // class_name and collection_name can be same,,,infact use same to avoid confusions
-// model(collection_creation) 
 
 const Registration = new mongoose.model('Registration',registrationSchema);  
-// const Info=new mongoose.model('Info',registrationSchema);   just checking by creating new collection
+module.exports=Registration;       //Export the module
 
-module.exports=Registration;
-// module.exports=Info;
