@@ -28,7 +28,7 @@ app.get('/records',async(req,res)=>{
 });
 
 //form fillup (create api)
-app.post("/form",async(req,res)=>{
+app.post("/records",async(req,res)=>{
     const {name ,email ,phone ,password ,confirmpassword}=req.body
     if (!name||!email||!phone||!password||!confirmpassword){
         return res.status(422).json({error:"Please fill all the forms!!"}) 
@@ -56,7 +56,7 @@ app.post("/form",async(req,res)=>{
 })
 
 //login form (create api)
-app.post("/login",async(req,res)=>{
+app.post("/records",async(req,res)=>{
     const {name ,password,confirmpassword}=req.body
     if (!name||!password){
         return res.status(422).json({error:"Please fill all the forms!!"}) 
@@ -83,7 +83,7 @@ app.post("/login",async(req,res)=>{
 
 //change form detail (update api)
 
-app.put('/api/update/:id',async(req,res)=>{
+app.put('/records/:id',async(req,res)=>{
 
      let record=await Registration.findById(req.params.id);
 
@@ -103,7 +103,7 @@ app.put('/api/update/:id',async(req,res)=>{
 
 //delete detail of a student
 
-app.delete('/api/delete/:id',async(req,res)=>{
+app.delete('/records/:id',async(req,res)=>{
   
   let record=await Registration.findById(req.params.id);
   if(!record){
@@ -113,7 +113,6 @@ app.delete('/api/delete/:id',async(req,res)=>{
     })
 }
   await record.remove();
-  
    res.status(200).json({
     sucess:true,
     message:'Record deleted succesfully'
