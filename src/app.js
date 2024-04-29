@@ -1,124 +1,35 @@
-const express=require("express");
-const bcrypt=require("bcryptjs");
-const path=require("path");
+const express = require("express");
+const app = express();
+const path = require("path");
 require("./db/conn");
-const Registration=require("../src/models/registration");    //import the module
-
-// const async = require("hbs/lib/async");
-
-const app=express();
 const port = process.env.PORT || 3002;
 
 //hosting static website
-const static_path=path.join(__dirname,"../public");
-const template_path=path.join(__dirname,"../templates/views");
+const static_path = path.join(__dirname, "../public");
+const template_path = path.join(__dirname, "../templates/views"); //contains filepath for hbs
 
+//middlewares
 app.use(express.json());
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(static_path));
+app.set("view engine", "hbs"); //telling the express about hbs
+app.set("views", template_path); //setting views path to template_path
 
-app.use(express.static(static_path));              
-app.set("view engine","hbs");                //telling the express about hbs
-app.set("views",template_path);               //setting views path to template_path
-
-
-//read registration record (read api)
-app.get('/records',async(req,res)=>{
-    const records=await Registration.find();
-    res.status(422).json(records);
+//render hbs files
+app.get("/", async (req, res) => {
+  res.render("index");
 });
 
-//form fillup (create api)
-app.post("/records",async(req,res)=>{
-    const {name ,email ,phone ,password ,confirmpassword}=req.body
-    if (!name||!email||!phone||!password||!confirmpassword){
-        return res.status(422).json({error:"Please fill all the forms!!"}) 
-    }
-    try{
-        const userExits=await Registration.findOne({email});
-        let num=phone.toString().length;
-        if(userExits){
-            return res.status(422).json({error:"User already exists!!"})
-        }
-        else if(num<10){
-            return res.status(422).json({error:"Phone number Invalid!!"})
-        }
-        else if(password!==confirmpassword){
-            return res.status(422).json({error:"Passwords doesn't match!!"})
-        }
-        else{
-            const user=new Registration({name ,email ,phone ,password ,confirmpassword});
-            await user.save();
-            res.status(201).json({message:"User registered!!"})
-        }
-    }catch(error){
-       console.log(error);
-    }
-})
+app.get("/register", async (req, res) => {
+  res.render("register");
+});
 
-//login form (create api)
-app.post("/records",async(req,res)=>{
-    const {name ,password,confirmpassword}=req.body
-    if (!name||!password){
-        return res.status(422).json({error:"Please fill all the forms!!"}) 
-    }
-    try{
-        const userExits=await Registration.findOne({name});
-        const isMatch=bcrypt.compare(password,confirmpassword);
-        if(userExits){
-            if(isMatch){
-                return res.status(201).json({message:"Login Successful!!"})
-                // res.render("welcome");
-            }
-            else{
-                return res.status(422).json({error:"Password Incorrect!!"})
-            }    
-        }else{
-            return res.status(422).json({error:"User doesn't exist!!"})   
-        } 
-    }catch(err){
-        console.log(err);
-    }
-})
+app.get("/recover", async (req, res) => {
+  res.render("recover");
+});
 
+app.use("/", require("./routes/form"));
 
-//change form detail (update api)
-
-app.put('/records/:id',async(req,res)=>{
-
-     let record=await Registration.findById(req.params.id);
-
-     if(!record){
-        res.status(200).json({
-            sucess:false,
-            message:'Record not found'
-        })
-    }
-    
-     record = await Registration.findByIdAndUpdate(req.params.id,req.body,{new:true,useFindAndModify:true,runValidators:true})
-          
-  
-     res.status(200).json({sucess:true})
-})
-
-
-//delete detail of a student
-
-app.delete('/records/:id',async(req,res)=>{
-  
-  let record=await Registration.findById(req.params.id);
-  if(!record){
-    res.status(200).json({
-        sucess:false,
-        message:'Record not found'
-    })
-}
-  await record.remove();
-   res.status(200).json({
-    sucess:true,
-    message:'Record deleted succesfully'
-   }) 
-})
-
-app.listen(port,(req,res)=>{
-    console.log(`Connection succesful at port ${port}`);
-})
+app.listen(port, (req, res) => {
+  console.log(`Connection succesful at port ${port}`);
+});
