@@ -3,14 +3,35 @@ const router = express.Router();
 const Registration = require("../models/registration"); //db model
 const bcrypt = require("bcryptjs");
 
-//get all records (read api)
-router.get("/records", async (req, res) => {
+//render hbs pages
+router.get("/", async (req, res) => {
+  res.render("login");
+});
+
+router.get("/recover", async (req, res) => {
+  try {
+    res.render("recover");
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.get("/register", async (req, res) => {
+  try {
+    res.render("register");
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+//get all users
+router.get("/users", async (req, res) => {
   const records = await Registration.find();
   res.status(422).json(records);
 });
 
 //register form (create api)
-router.post("/records", async (req, res) => {
+router.post("/register", async (req, res) => {
   const { name, email, phone, password, confirmpassword } = req.body;
   if (!name || !email || !phone || !password || !confirmpassword) {
     return res.status(422).json({ error: "Please fill all the forms!!" });
@@ -33,15 +54,16 @@ router.post("/records", async (req, res) => {
         confirmpassword,
       });
       await user.save();
-      res.status(201).json({ message: "User registered!!" });
+      res.status(201).render("welcome");
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json(error.message);
   }
 });
 
 //login form (create api)
-router.post("/records", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { name, password, confirmpassword } = req.body;
   if (!name || !password) {
     return res.status(422).json({ error: "Please fill all the forms!!" });
@@ -68,7 +90,6 @@ router.post("/records", async (req, res) => {
 //change form detail (update api)
 router.put("/records/:id", async (req, res) => {
   let record = await Registration.findById(req.params.id);
-
   if (!record) {
     res.status(200).json({
       sucess: false,
@@ -83,7 +104,6 @@ router.put("/records/:id", async (req, res) => {
 
   res.status(200).json({ sucess: true });
 });
-
 
 //delete api
 router.delete("/records/:id", async (req, res) => {
@@ -100,6 +120,5 @@ router.delete("/records/:id", async (req, res) => {
     message: "Record deleted succesfully",
   });
 });
-
 
 module.exports = router;

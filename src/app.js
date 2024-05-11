@@ -15,21 +15,8 @@ app.use(express.static(static_path));
 app.set("view engine", "hbs"); //telling the express about hbs
 app.set("views", template_path); //setting views path to template_path
 
-//render hbs files
-app.get("/", async (req, res) => {
-  res.render("index");
-});
-
-app.get("/register", async (req, res) => {
-  res.render("register");
-});
-
-app.get("/recover", async (req, res) => {
-  res.render("recover");
-});
-
 app.use("/", require("./routes/form"));
 
-app.listen(port, (req, res) => {
+app.listen(port, () => {
   console.log(`Connection succesful at port ${port}`);
 });
